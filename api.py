@@ -34,6 +34,7 @@ connection = pymysql.connect(host='localhost', user='root', db='NSB', cursorclas
 
 def init():
     try:
+        connection = pymysql.connect(host='localhost', user='root', db='NSB', cursorclass=pymysql.cursors.DictCursor)
         sql = "CREATE TABLE IF NOT EXISTS cart (uuid varchar(100), id INTEGER PRIMARY KEY auto_increment, productId int, productName text, productImage text, quantity int, price int, store varchar(10))"
         with connection.cursor() as cursor:
             cursor.execute(sql)

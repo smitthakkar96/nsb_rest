@@ -33,10 +33,13 @@ connection = pymysql.connect(host='localhost', user='root', db='NSB', cursorclas
 
 
 def init():
-    sql = "CREATE TABLE IF NOT EXISTS cart (uuid varchar(100), id INTEGER PRIMARY KEY auto_increment, productId int, productName text, productImage text, quantity int, price int, store varchar(10))"
-    with connection.cursor() as cursor:
-        cursor.execute(sql)
-    connection.commit()
+    try:
+        sql = "CREATE TABLE IF NOT EXISTS cart (uuid varchar(100), id INTEGER PRIMARY KEY auto_increment, productId int, productName text, productImage text, quantity int, price int, store varchar(10))"
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+        connection.commit()
+    except:
+        pass
 
 init()
 
@@ -60,6 +63,7 @@ def products():
 
 @app.route('/api/orders', methods = ['POST'])
 def order():
+    init()
     paymentMethod = request.json.get('payment_method')
     paid = True
     if paymentMethod == "COD":
@@ -97,6 +101,7 @@ def order():
 @app.route('/api/cancel', methods = ['POST'])
 def cancel():
     #import pdb; pdb.set_trace()
+    init()
     store = request.json.get('store')
     orderId = request.json.get('orderId')
     try:
@@ -122,6 +127,7 @@ def getOrderId(store, orderId):
 @app.route('/api/cart/<uuid>', methods = ['GET'])
 def getMyCart(uuid):
     # import pdb; pdb.set_trace()
+    init()
     sql = "select * from cart where uuid='" + uuid + "'"
     with connection.cursor() as cursor:
         cursor.execute(sql)
@@ -134,6 +140,7 @@ def getMyCart(uuid):
 @app.route('/api/addItem', methods = ['POST'])
 def addItem():
     # import pdb; pdb.set_trace()
+    init()
     uuid = request.json.get("uuid", 'undefined')
     productId = request.json["productId"]
     productName = request.json["productName"]
@@ -149,6 +156,7 @@ def addItem():
 
 @app.route('/api/updateQuantity', methods = ['POST'])
 def updateQuantity():
+    init()
     productId = request.json.get('productId')
     userId = request.json.get('uuid', 'undefined')
     quantity = request.json.get('quantity')
@@ -160,6 +168,7 @@ def updateQuantity():
 
 @app.route('/api/checkIfExist/<uuid>/<productId>')
 def checkIfExist(uuid, productId):
+    init()
     sql = 'select * from cart where uuid="' + uuid + '" and productId=' + productId
     with connection.cursor() as cursor:
         cursor.execute(sql)
